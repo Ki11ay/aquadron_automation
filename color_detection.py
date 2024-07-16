@@ -12,18 +12,20 @@ color_ranges = [
 # Open a video capture
 cap = cv2.VideoCapture(0)  # Change to 0 to use webcam
 
-
 # Function to calculate the distance from the middle line
 def distance_from_middle(x, frame_width):
     middle = frame_width // 2
     return x - middle
-
 
 # Minimum area to consider an object
 min_area = 1000
 
 # Variable to keep track of the last time the position was printed
 last_print_time = time.time()
+
+# Variables to store the current largest object
+current_largest_contour = None
+current_largest_color_name = ""
 
 while True:
     ret, frame = cap.read()
@@ -37,23 +39,47 @@ while True:
 
     largest_contour = None
     largest_area = 0
+    largest_color_name = ""
 
-    for color in color_ranges:
-        # Create a mask for the specified color
-        mask = cv2.inRange(hsv, color['lower'], color['upper'])
+    if current_largest_contour is None:
+        # Find the largest object if we are not tracking any object
+        for color in color_ranges:
+            # Create a mask for the specified color
+            mask = cv2.inRange(hsv, color['lower'], color['upper'])
 
-        # Find contours in the mask
+            # Find contours in the mask
+            contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                if area >= min_area and area > largest_area:
+                    largest_area = area
+                    largest_contour = cnt
+                    largest_color_name = color['name']
+
+        if largest_contour is not None:
+            current_largest_contour = largest_contour
+            current_largest_color_name = largest_color_name
+    else:
+        # Track the current largest object
+        mask = cv2.inRange(hsv, color_ranges[[color['name'] for color in color_ranges].index(current_largest_color_name)]['lower'],
+                                 color_ranges[[color['name'] for color in color_ranges].index(current_largest_color_name)]['upper'])
+
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+        found = False
         for cnt in contours:
-            area = cv2.contourArea(cnt)
-            if area >= min_area and area > largest_area:
-                largest_area = area
-                largest_contour = cnt
+            if cv2.contourArea(cnt) >= min_area:
+                current_largest_contour = cnt
+                found = True
+                break
 
-    if largest_contour is not None:
+        if not found:
+            current_largest_contour = None
+
+    if current_largest_contour is not None:
         # Calculate the centroid of the largest contour
-        M = cv2.moments(largest_contour)
+        M = cv2.moments(current_largest_contour)
         if M['m00'] != 0:
             cx = int(M['m10'] / M['m00'])
             cy = int(M['m01'] / M['m00'])
@@ -62,9 +88,9 @@ while True:
             distance = distance_from_middle(cx, frame_width)
 
             # Determine the position
-            if distance > 40:
+            if distance > 80:
                 position = "right"
-            elif distance < -40:
+            elif distance < -80:
                 position = "left"
             else:
                 position = "forward"
@@ -76,7 +102,7 @@ while True:
                 last_print_time = current_time
 
             # Draw the contour and centroid on the frame
-            cv2.drawContours(frame, [largest_contour], -1, (0, 255, 0), 2)
+            #cv2.drawContours(frame, [current_largest_contour], -1, (0, 255, 0), 2)
             cv2.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
 
     # Draw the middle line
