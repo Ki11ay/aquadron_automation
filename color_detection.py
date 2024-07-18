@@ -6,8 +6,12 @@ import time
 color_ranges = [
     {'name': 'red', 'lower': np.array([0, 120, 70]), 'upper': np.array([10, 255, 255])},
     {'name': 'green', 'lower': np.array([36, 25, 25]), 'upper': np.array([70, 255, 255])},
-    {'name': 'blue', 'lower': np.array([94, 80, 2]), 'upper': np.array([126, 255, 255])}
+    {'name': 'blue', 'lower': np.array([94, 80, 2]), 'upper': np.array([126, 255, 255])},
+    {'name': 'yellow', 'lower': np.array([22, 93, 0]), 'upper': np.array([45, 255, 255])},
+    {'name': 'orange', 'lower': np.array([10, 100, 20]), 'upper': np.array([25, 255, 255])},
+    {'name': 'purple', 'lower': np.array([129, 50, 70]), 'upper': np.array([158, 255, 255])}
 ]
+
 
 # Open a video capture
 cap = cv2.VideoCapture(0)  # Change to 0 to use webcam
