@@ -5,13 +5,13 @@ import time
 # Define the color range for object detection (HSV)
 color_ranges = [
     {'name': 'red', 'lower': np.array([0, 120, 70]), 'upper': np.array([10, 255, 255])},
+    {'name': 'red', 'lower': np.array([170, 120, 70]), 'upper': np.array([180, 255, 255])},
     {'name': 'green', 'lower': np.array([36, 25, 25]), 'upper': np.array([70, 255, 255])},
     {'name': 'blue', 'lower': np.array([94, 80, 2]), 'upper': np.array([126, 255, 255])},
     {'name': 'yellow', 'lower': np.array([22, 93, 0]), 'upper': np.array([45, 255, 255])},
     {'name': 'orange', 'lower': np.array([10, 100, 20]), 'upper': np.array([25, 255, 255])},
     {'name': 'purple', 'lower': np.array([129, 50, 70]), 'upper': np.array([158, 255, 255])}
 ]
-
 
 # Open a video capture
 cap = cv2.VideoCapture(0)  # Change to 0 to use webcam
@@ -50,6 +50,12 @@ while True:
         for color in color_ranges:
             # Create a mask for the specified color
             mask = cv2.inRange(hsv, color['lower'], color['upper'])
+            
+            # Special case for red: merge the two red masks
+            if color['name'] == 'red':
+                lower_red_mask = cv2.inRange(hsv, color_ranges[0]['lower'], color_ranges[0]['upper'])
+                upper_red_mask = cv2.inRange(hsv, color_ranges[1]['lower'], color_ranges[1]['upper'])
+                mask = cv2.bitwise_or(lower_red_mask, upper_red_mask)
 
             # Find contours in the mask
             contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -68,6 +74,12 @@ while True:
         # Track the current largest object
         mask = cv2.inRange(hsv, color_ranges[[color['name'] for color in color_ranges].index(current_largest_color_name)]['lower'],
                                  color_ranges[[color['name'] for color in color_ranges].index(current_largest_color_name)]['upper'])
+        
+        # Special case for red: merge the two red masks
+        if current_largest_color_name == 'red':
+            lower_red_mask = cv2.inRange(hsv, color_ranges[0]['lower'], color_ranges[0]['upper'])
+            upper_red_mask = cv2.inRange(hsv, color_ranges[1]['lower'], color_ranges[1]['upper'])
+            mask = cv2.bitwise_or(lower_red_mask, upper_red_mask)
 
         contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -106,8 +118,9 @@ while True:
                 last_print_time = current_time
 
             # Draw the contour and centroid on the frame
-            #cv2.drawContours(frame, [current_largest_contour], -1, (0, 255, 0), 2)
+            cv2.drawContours(frame, [current_largest_contour], -1, (0, 255, 0), 2)
             cv2.circle(frame, (cx, cy), 5, (255, 0, 0), -1)
+            cv2.putText(frame, current_largest_color_name, (cx - 20, cy - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
     # Draw the middle line
     cv2.line(frame, (frame_width // 2, 0), (frame_width // 2, frame_height), (0, 255, 255), 2)
