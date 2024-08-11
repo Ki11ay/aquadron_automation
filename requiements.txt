@@ -1,0 +1,26 @@
+sudo apt-get update
+sudo apt-get install python3-pip
+pip3 install pyserial evdev
+sudo apt-get install bluez bluez-tools
+
+//Connect PS5 Controller to Raspberry Pi via Bluetooth:
+	•	Turn on your PS5 controller and put it in pairing mode (hold the PS + Share button until the light blinks).
+	•	On your Raspberry Pi, run:
+
+bluetoothctl
+
+//Inside bluetoothctl:
+
+power on
+agent on
+default-agent
+scan on
+
+// Wait until you see your controller’s MAC address and pair with it:
+
+pair <controller_mac_address>
+trust <controller_mac_address>
+connect <controller_mac_address>
+
+Finally, exit bluetoothctl by typing exit.
+
