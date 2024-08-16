@@ -1,0 +1,97 @@
+RPI 
+
+commands
+sudo apt-get update
+sudo apt-get install python3-pip
+sudo apt update
+sudo apt install libcamera-apps -y
+pip3 install pyserial evdev
+sudo apt-get install bluez bluez-tools
+sudo apt install tightvncserver
+pip install opencv-python
+pip install picamera
+pip install picamera2
+
+to open camera
+- [ ] libcamera-still -t 5000 
+to check the status of the camera
+- [ ] vcgencmd get_camera
+
+Connecting through bluetooth
+//Connect PS5 Controller to Raspberry Pi via Bluetooth:
+	•	Turn on your PS5 controller and put it in pairing mode (hold the PS + Share button until the light blinks).
+	•	On your Raspberry Pi, run:
+
+bluetoothctl
+
+//Inside bluetoothctl:
+
+power on
+agent on
+default-agent
+scan on
+
+// Wait until you see your controller’s MAC address and pair with it:
+
+pair <controller_mac_address>
+trust <controller_mac_address>
+
+connect <controller_mac_address>
+
+Finally, exit bluetoothctl by typing exit.
+
+
+screen streaming
+// start the vnc : 
+
+vncserver :1
+
+1. Find the VNC server address: The VNC server address will be displayed in the terminal output. It will look something like :1 (the number might be different).
+2. Install a VNC client on your Mac: There are several VNC clients available for Mac, such as RealVNC, Screen Sharing, or others.
+3. Connect to the Raspberry Pi's VNC server: Open the VNC client on your Mac and enter the VNC server address, including the display number (e.g., raspberrypi.local:1 or 192.168.1.100:1).
+
+General Commands:
+command	function
+Ctrl+C	close a running code
+kill -9	forcefully terminate a process
+sudo shutdown -h now	to shutdown 
+sudo raspi-config	open the configuration
+sudo apt-get update		Update package lists:
+sudo apt-get upgrade -y	Upgrade installed packages:
+sudo apt-get dist-upgrade -y	Upgrade the entire distribution:
+uname -a	Check system information:
+cat /proc/cpuinfo	View CPU information:
+free -h	Check memory usage:
+df -h	Check disk usage:
+vcgencmd measure_temp	Check temperature:
+sudo reboot	Reboot the Raspberry Pi:
+sudo raspi-config	Change the hostname: , open setting
+cp source_file destination_file	copy a file
+mv source_file destination_file	move or rename a file
+rm file_name	Delete a file:
+rm -r directory_name	Delete a directory and its contents:
+touch new_file	create a new file
+hostname -I	check ip address
+ifconfig	View network interfaces:
+ping google.com	Ping a network address:
+sudo iwlist wlan0 scan	Scan for Wi-Fi networks:
+apt-cache search package_name	Search for a package:
+sudo apt-get install package_name	Install a package:
+sudo apt-get remove package_name	remove a package
+sudo apt-get autoremove -y	Clean up unused packages:
+dpkg --list		List installed packages:
+sudo apt-get install python3-rpi.gpio	Install the RPi.GPIO library for Python:
+sudo apt-get install pigpio python3-pigpio		Install the pigpio library for Python:
+libcamera-still -o image.jpg	Capture an image with libcamera-still:
+libcamera-vid -o video.h264 -t 10000	Record a video with libcamera-vid:
+libcamera-still -t 5000	View the camera preview:
+sudo apt-get install realvnc-vnc-server -y	install RealVNC server:
+	
+
+
+
+
+working with tf:
+python3.11 -m venv myenv
+source myenv/bin/activate
+pip install tflite-model-maker
