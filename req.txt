@@ -3,15 +3,24 @@ RPI
 commands
 sudo apt-get update
 sudo apt-get install python3-pip
+sudo apt install python3-opencv
+sudo apt install python3-picamera2
 sudo apt update
 sudo apt install libcamera-apps -y
-pip3 install pyserial evdev
+sudo apt-get install evtest
 sudo apt-get install bluez bluez-tools
 sudo apt install tightvncserver
+sudo apt install python3-serial
+sudo apt install python3-evdev
+sudo apt install libcamera-dev python3-picamera2
+sudo evtest
+
+
 pip install opencv-python
-pip install picamera
 pip install picamera2
 
+
+pip3 install pyserial evdev
 to open camera
 - [ ] libcamera-still -t 5000 
 to check the status of the camera
@@ -88,8 +97,10 @@ libcamera-still -t 5000	View the camera preview:
 sudo apt-get install realvnc-vnc-server -y	install RealVNC server:
 	
 
-
-
+// to insure that this code runs when the rpi starts
+sudo nano /etc/rc.local
+python3 /path/to/your_script.py &
+sudo reboot
 
 working with tf:
 python3.11 -m venv myenv
